@@ -1,36 +1,24 @@
-import itertools
+import re, json
 
-happy = {}
+def evaluate(a):
+    if type(a) is int:
+        return a
+    if type(a) is list:
+        return sum([evaluate(b) for b in a])
+    if type(a) is unicode:
+        try:
+            return int(a)
+        except:
+            return 0
+    if type(a) is dict:
+        if "red" in a.values():
+            return 0
+        else:
+            return sum([evaluate(v) for v in a.values()])
 
-for line in open("day12.txt", "r").readlines():
-    p = line.strip(".\n").split(" ")
-    happy[(p[0],p[10])] = int(p[3]) * (-1 if p[2] == "lose" else 1)
+with open ("day12.txt", "r") as f:
+    print sum([sum ([int(r) for r in re.findall("(-?\d+)", inp)]) for inp in f.readlines()])
 
-c = set([i for t in happy.keys() for i in t])
-
-for person in c:
-    happy[("Russ", person)] = 0
-    happy[(person, "Russ")] = 0
-
-c.add("Russ")
-
-max_l = None
-
-def get_h (i,j,happy):
-    if (i,j) in happy:
-        return happy[(i,j)]
-    else:
-        return happy[(j,i)]
-
-l = len(c)
-for p in itertools.permutations(c):
-    h = 0
-    for i in range(len(p)):
-        h += happy [(p[i], p[(i-1)%l])]
-        h += happy [(p[i], p[(i+1)%l])]
-    if max_l is None or h > max_l:
-        max_l = h
-        max_p = p
-
-print (str(max_p)+": %d" % max_l)
-
+with open ("day12.txt", "r") as f:
+    l = json.load(f)
+print evaluate(l)
