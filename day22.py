@@ -88,7 +88,7 @@ class Game(object):
             if target.hp <= 0: raise KilledException(target, "out of hp")
         else:
             spell = [s for s in spells if s.name[0] == action[0]][0]
-            if spell in actor.effects:
+            if spell.name[0] in [a.name[0] for a in actor.effects]:
                 self.output += "{0.name} already active\n".format(spell)
                 raise KilledException(actor, "cast an existing spell")
             else:
@@ -96,6 +96,7 @@ class Game(object):
 
     def do_turn(self, action):
         self.history += action
+        self.player.hp -= 1
         self.take_turn(self.player, self.boss, action)
         self.take_turn(self.boss, self.player, "A")
 
@@ -121,8 +122,8 @@ def try_game(game, min_mana):
 
 
 player = Character("player", 50, 500)
-boss = Character ("boss", 50, 0)
-boss.attack = 8
+boss = Character ("boss", 58, 0)
+boss.attack = 9
 
 g = Game(player, boss)
 
